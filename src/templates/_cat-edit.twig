@@ -12,7 +12,7 @@
 
 {% set fullPageForm = true %}
 
-{% set formActions = [
+{# {% set formActions = [
     {
         label: 'Save and continue editing'|t('app'),
         redirect: 'cats-manager/{id}'|hash,
@@ -28,7 +28,7 @@
             name: catObject.name,
         }),
     },
-]|filter %}
+]|filter %} #}
 
 {% block content %}
 
