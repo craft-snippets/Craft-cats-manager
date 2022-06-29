@@ -1,0 +1,87 @@
+{% extends "_layouts/cp" %}
+{% import '_includes/forms' as forms %}
+{% from '_includes/forms' import field %}
+
+{% set crumbs = [
+    { label: 'Cats'|t('craft-cats-manager'), url: url('cats-manager') },
+] %}
+
+{% set isNew = (catObject is not defined or not catObject.id) %}
+
+{% set title = isNew ? 'Create new cat'|t('craft-cats-manager') : 'Edit'|t('craft-cat-manager') ~ ' ' ~ catObject.name %}
+
+{% set fullPageForm = true %}
+
+{% set formActions = [
+    {
+        label: 'Save and continue editing'|t('app'),
+        redirect: 'cats-manager/{id}'|hash,
+        shortcut: true,
+        retainScroll: true,
+    },        
+    not isNew ? {
+        label: 'Delete'|t('app'),
+        action: 'craft-cats-manager/cats/cat-delete',
+        redirect: 'cats-manager'|hash,
+        destructive: true,
+        confirm: 'Are you sure you want to delete “{name}”?'|t('app', {
+            name: catObject.name,
+        }),
+    },
+]|filter %}
+
+{% block content %}
+
+	{{actionInput('craft-cats-manager/cats/cat-save')}}
+    {{redirectInput('cats-manager')}}
+
+	{% if not isNew %}
+		{{hiddenInput('catId', catObject.id)}}
+	{% endif %}
+
+    {# name #}
+    {{ forms.textField({
+        label: 'Cat name'|t('craft-cats-manager'),
+        id: 'name',
+        name: 'name',
+        value: catObject.name,
+        required: true,
+        autofocus: true,
+        type: 'text',
+        errors: catObject.getErrors('name'),
+    }) }}
+
+    {# cat food #}
+    {% set foodColumns = {
+        foodName: {
+            'heading': 'Food name',
+            'type': 'text',
+        },
+        foodType: {
+            'heading': 'Food type',
+            'type': 'select',
+            'class': 'thin',
+            'options': {
+                'dry': 'Dry food',
+                'canned': 'Canned food',
+            },
+        }
+    } %}
+
+    {{forms.editableTableField({
+        id: 'catFood',
+        name: 'catFood',
+        cols: foodColumns,
+        rows: catObject.catFood,
+        addRowLabel: 'Add food'|t('craft-cats-manager'),
+        initJs: true,
+        label: 'Food liked by your cat'|t('craft-cats-manager'),
+        instructions: "Enter cat's favourite food"|t('craft-cats-manager'),
+        errors: catObject.getErrors('catFood'),  
+        allowAdd: true,
+        allowDelete: true,
+        allowReorder: true,        
+    }) }}
+    
+
+{% endblock %}

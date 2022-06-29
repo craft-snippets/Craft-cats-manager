@@ -1,0 +1,30 @@
+{% extends "_layouts/cp" %}
+{% do view.registerAssetBundle('craft\\web\\assets\\admintable\\AdminTableAsset') -%}
+
+{% set title = 'Cats'|t('craft-cats-manager') %}
+
+{% block actionButton %}
+<a href="{{ url('cats-manager/new') }}" class="btn submit add icon">
+    {{ 'New cat'|t('craft-cats-manager') }}
+</a>
+{% endblock %}
+
+{% block content %}
+	<div id="cats-vue-admin-table"></div>
+{% endblock %}
+
+{% js %}
+    var columns = [
+        { name: '__slot:title', title: Craft.t('app', 'Cat name') },
+    ];
+
+    new Craft.VueAdminTable({
+        columns: columns,
+        container: '#cats-vue-admin-table',
+        deleteAction: 'craft-cats-manager/cats/cat-delete',
+        deleteConfirmationMessage: Craft.t('app', "Are you sure you want to delete “{name}”?"),
+        reorderAction: 'craft-cats-manager/cats/cat-reorder',
+        emptyMessage: Craft.t('craft-cats-manager', 'No cats exist yet'),
+        tableData: {{ cats|json_encode|raw }},
+    });
+{% endjs %}
