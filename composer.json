@@ -2,7 +2,7 @@
     "name": "craftsnippets/craft-cats-manager",
     "description": "Example plugin showing how to use custom database model",
     "type": "craft-plugin",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "keywords": [
         "craft",
         "cms",
@@ -11,8 +11,8 @@
         "craft cats manager"
     ],
     "support": {
-        "docs": "???",
-        "issues": "???"
+        "docs": "https://github.com/craft-snippets/Craft-cats-manager/blob/master/README.md",
+        "issues": "https://github.com/craft-snippets/Craft-cats-manager/issues"
     },
     "license": "MIT",
     "authors": [
@@ -34,8 +34,8 @@
         "handle": "craft-cats-manager",
         "developer": "Piotr Pogorzelski",
         "developerUrl": "http://craftsnippets.com/",
-        "documentationUrl": "???",
-        "changelogUrl": "???",
+        "documentationUrl": "https://github.com/craft-snippets/Craft-cats-manager/blob/master/README.md",
+        "changelogUrl": "https://github.com/craft-snippets/Craft-cats-manager/issues",
         "class": "craftsnippets\\craftcatsmanager\\CraftCatsManager"
     }
 }
