@@ -9,6 +9,7 @@ use craftsnippets\craftcatsmanager\models\Cat as CatModel;
 
 use craft\helpers\ArrayHelper;
 use craft\helpers\StringHelper;
+use craft\helpers\Db;
 
 use craftsnippets\craftcatsmanager\helpers\DbTables;
 
@@ -69,7 +70,7 @@ class CatsService extends Component{
         }
 
         // validate
-        if (!$catObject->validate()) {
+        if (!$catObject->validate()){
             return false;
         }
 
@@ -78,12 +79,19 @@ class CatsService extends Component{
         // set properties
         $catRecord->name = $catObject->name;
         $catRecord->order = $catObject->order;
+        $catRecord->uid = $catObject->uid;
 
         // set json settings
         $catRecord->jsonSettings = $catObject->prepareJsonSettings();
 
         // save
         $result = $catRecord->save(false);
+
+        // set id for "save and stay"
+        if ($isNew){
+            $catObject->id = Db::idByUid(DbTables::CATS, $catObject->uid);
+        }
+
         return $result;
 	}
 
