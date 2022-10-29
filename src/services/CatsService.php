@@ -3,16 +3,14 @@ namespace craftsnippets\craftcatsmanager\services;
 
 use Craft;
 use craft\base\Component;
-
-use craftsnippets\craftcatsmanager\records\CatRecord;
-use craftsnippets\craftcatsmanager\models\Cat as CatModel;
-
 use craft\helpers\ArrayHelper;
 use craft\helpers\StringHelper;
 use craft\helpers\Db;
+use craft\events\ConfigEvent;
 
+use craftsnippets\craftcatsmanager\records\CatRecord;
+use craftsnippets\craftcatsmanager\models\Cat as CatModel;
 use craftsnippets\craftcatsmanager\helpers\DbTables;
-
 use craftsnippets\craftcatsmanager\events\DefineCatEvent;
 
 class CatsService extends Component{
@@ -56,7 +54,9 @@ class CatsService extends Component{
 
         if ($isNew) {
             $catObject->uid = StringHelper::UUID();
-        } 
+        } else if (!$catObject->uid) {
+            $catObject->uid = Db::uidById(DbTables::CATS, $catObject->id);
+        }
 
         // order
         if($isNew){
@@ -74,25 +74,22 @@ class CatsService extends Component{
             return false;
         }
 
-        $catRecord = CatRecord::find()->andWhere(['uid' => $catObject->uid])->one() ?? new CatRecord();
+        // Save it to the project config
+        $path = DbTables::CATS_PROJECT_CONFIG . ".{$catObject->uid}";
+        Craft::$app->projectConfig->set($path, [
+            'name' => $catObject->name,
+            'order' => $catObject->order,
+            // set json settings
+            'jsonSettings' => $catObject->prepareJsonSettings(),
+        ]);
 
-        // set properties
-        $catRecord->name = $catObject->name;
-        $catRecord->order = $catObject->order;
-        $catRecord->uid = $catObject->uid;
-
-        // set json settings
-        $catRecord->jsonSettings = $catObject->prepareJsonSettings();
-
-        // save
-        $result = $catRecord->save(false);
 
         // set id for "save and stay"
         if ($isNew){
             $catObject->id = Db::idByUid(DbTables::CATS, $catObject->uid);
         }
 
-        return $result;
+        return true;
 	}
 
 	public function deleteCatById(int $catId)
@@ -103,7 +100,9 @@ class CatsService extends Component{
             return false;
         }
 
-        return Craft::$app->getDb()->createCommand()->delete(DbTables::CATS, ['id' => $catOject->id])->execute();
+        // return Craft::$app->getDb()->createCommand()->delete(DbTables::CATS, ['id' => $catOject->id])->execute();
+        $path = DbTables::CATS_PROJECT_CONFIG . "{$catOject->uid}";
+        Craft::$app->projectConfig->remove($path);        
 	}
 
     public function reorderCats($ids)
@@ -138,5 +137,40 @@ class CatsService extends Component{
         return $cat;
 	}
 
-    
+    public function handleChangedCat(ConfigEvent $event)
+    {
+            // Get the UID that was matched in the config path
+            $uid = $event->tokenMatches[0];
+            $data = $event->newValue;
+
+            $catRecord = CatRecord::find()->andWhere(['uid' => $uid])->one() ?? new CatRecord();
+
+            $isNew = $catRecord->getIsNewRecord();
+
+            // set properties
+            $catRecord->name = $data['name'];
+            $catRecord->order = $data['order'];
+            $catRecord->uid = $uid;
+            $catRecord->jsonSettings = $data['jsonSettings'];
+
+            // save
+            $result = $catRecord->save(false);
+    }
+
+    public function handleDeletedCat(ConfigEvent $event)
+    {
+        // Get the UID that was matched in the config path
+        $uid = $event->tokenMatches[0];
+
+        // Get the product type
+        $catObject = ArrayHelper::firstWhere($this->getAllCats(), 'uid', $uid);
+
+        // If that came back empty, we’re done!
+        if (!$catObject) {
+            return;
+        }
+        Craft::$app->getDb()->createCommand()->delete(DbTables::CATS, ['id' => $catObject->id])->execute();
+    }
+
+
 }

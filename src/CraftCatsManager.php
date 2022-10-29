@@ -7,6 +7,10 @@ use craft\base\Plugin;
 use yii\base\Event;
 use craft\web\UrlManager;
 use craft\events\RegisterUrlRulesEvent;
+use craft\events\ConfigEvent;
+use craft\services\ProjectConfig;
+
+use craftsnippets\craftcatsmanager\helpers\DbTables;
 
 class CraftCatsManager extends Plugin
 {
@@ -37,7 +41,13 @@ class CraftCatsManager extends Plugin
         $this->setComponents([
             'cats' => \craftsnippets\craftcatsmanager\services\CatsService::class,
         ]);
-        
+
+        // project config
+        Craft::$app->projectConfig
+            ->onAdd(DbTables::CATS_PROJECT_CONFIG . '.{uid}', [$this->cats, 'handleChangedCat'])
+            ->onUpdate(DbTables::CATS_PROJECT_CONFIG . '.{uid}', [$this->cats, 'handleChangedCat'])
+            ->onRemove(DbTables::CATS_PROJECT_CONFIG . '.{uid}', [$this->cats, 'handleDeletedCat']);
+
     }
 
     // navigation link
