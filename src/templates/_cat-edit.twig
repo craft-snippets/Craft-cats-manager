@@ -8,7 +8,7 @@
 
 {% set isNew = (catObject is not defined or not catObject.id) %}
 
-{% set title = isNew ? 'Create new cat'|t('craft-cats-manager') : 'Edit'|t('craft-cat-manager') ~ ' ' ~ catObject.name %}
+{% set title = isNew ? 'Create new cat'|t('craft-cats-manager') : 'Edit'|t('app') ~ ' ' ~ catObject.name %}
 
 {% set fullPageForm = true %}
 
