@@ -94,15 +94,15 @@ class CatsService extends Component{
 
 	public function deleteCatById(int $catId)
 	{
-        $catOject = $this->getCatById($catId);
+        $catObject = $this->getCatById($catId);
 
-        if (!$catOject) {
+        if (!$catObject) {
             return false;
         }
 
-        // return Craft::$app->getDb()->createCommand()->delete(DbTables::CATS, ['id' => $catOject->id])->execute();
-        $path = DbTables::CATS_PROJECT_CONFIG . "{$catOject->uid}";
-        Craft::$app->projectConfig->remove($path);        
+        $path = DbTables::CATS_PROJECT_CONFIG . ".{$catObject->uid}";
+        Craft::$app->projectConfig->remove($path);
+        return true;
 	}
 
     public function reorderCats($ids)
