@@ -18,7 +18,7 @@ class CraftCatsManager extends Plugin
     public static $plugin;
 
     public string $schemaVersion = '1.0.0';
-    public bool $hasCpSettings = true;
+    public bool $hasCpSettings = false;
 
     public bool $hasCpSection = true;
 

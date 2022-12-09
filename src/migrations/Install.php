@@ -13,17 +13,14 @@ class Install extends Migration
 
     public function safeUp()
     {
-        $this->driver = Craft::$app->getConfig()->getDb()->driver;
-        if ($this->createTables()) {
-            Craft::$app->db->schema->refresh();
-        }
+        $this->createTables();
         return true;
     }
 
     public function safeDown()
     {
-        $this->driver = Craft::$app->getConfig()->getDb()->driver;
         $this->removeTables();
+        $this->dropProjectConfig();
         return true;
     }
 
@@ -48,4 +45,10 @@ class Install extends Migration
     {
         $this->dropTableIfExists(Table::CATS);
     }
+
+    public function dropProjectConfig(): void
+    {
+        Craft::$app->projectConfig->remove(Table::CATS_PROJECT_CONFIG);
+    }
+
 }
