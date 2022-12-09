@@ -143,6 +143,8 @@ class CatsService extends Component{
             $uid = $event->tokenMatches[0];
             $data = $event->newValue;
 
+        $transaction = Craft::$app->getDb()->beginTransaction();
+        try {
             $catRecord = CatRecord::find()->andWhere(['uid' => $uid])->one() ?? new CatRecord();
 
             $isNew = $catRecord->getIsNewRecord();
@@ -155,6 +157,11 @@ class CatsService extends Component{
 
             // save
             $result = $catRecord->save(false);
+            $transaction->commit();
+        } catch (\Exception $e) {
+            $transaction->rollBack();
+            throw $e;
+        }
     }
 
     public function handleDeletedCat(ConfigEvent $event)
@@ -169,7 +176,15 @@ class CatsService extends Component{
         if (!$catObject) {
             return;
         }
-        Craft::$app->getDb()->createCommand()->delete(Table::CATS, ['id' => $catObject->id])->execute();
+
+        $transaction = Craft::$app->getDb()->beginTransaction();
+        try {
+            Craft::$app->getDb()->createCommand()->delete(Table::CATS, ['id' => $catObject->id])->execute();
+            $transaction->commit();
+        } catch (\Exception $e) {
+            $transaction->rollBack();
+            throw $e;
+        }
     }
 
 
