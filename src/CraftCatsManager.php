@@ -10,7 +10,7 @@ use craft\events\RegisterUrlRulesEvent;
 use craft\events\ConfigEvent;
 use craft\services\ProjectConfig;
 
-use craftsnippets\craftcatsmanager\helpers\DbTables;
+use craftsnippets\craftcatsmanager\db\Table;
 
 class CraftCatsManager extends Plugin
 {
@@ -18,7 +18,6 @@ class CraftCatsManager extends Plugin
     public static $plugin;
 
     public string $schemaVersion = '1.0.0';
-
     public bool $hasCpSettings = true;
 
     public bool $hasCpSection = true;
@@ -44,9 +43,9 @@ class CraftCatsManager extends Plugin
 
         // project config
         Craft::$app->projectConfig
-            ->onAdd(DbTables::CATS_PROJECT_CONFIG . '.{uid}', [$this->cats, 'handleChangedCat'])
-            ->onUpdate(DbTables::CATS_PROJECT_CONFIG . '.{uid}', [$this->cats, 'handleChangedCat'])
-            ->onRemove(DbTables::CATS_PROJECT_CONFIG . '.{uid}', [$this->cats, 'handleDeletedCat']);
+            ->onAdd(Table::CATS_PROJECT_CONFIG . '.{uid}', [$this->cats, 'handleChangedCat'])
+            ->onUpdate(Table::CATS_PROJECT_CONFIG . '.{uid}', [$this->cats, 'handleChangedCat'])
+            ->onRemove(Table::CATS_PROJECT_CONFIG . '.{uid}', [$this->cats, 'handleDeletedCat']);
 
     }
 

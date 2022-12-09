@@ -10,7 +10,7 @@ use craft\events\ConfigEvent;
 
 use craftsnippets\craftcatsmanager\records\CatRecord;
 use craftsnippets\craftcatsmanager\models\Cat as CatModel;
-use craftsnippets\craftcatsmanager\helpers\DbTables;
+use craftsnippets\craftcatsmanager\db\Table;
 use craftsnippets\craftcatsmanager\events\DefineCatEvent;
 
 class CatsService extends Component{
@@ -55,7 +55,7 @@ class CatsService extends Component{
         if ($isNew) {
             $catObject->uid = StringHelper::UUID();
         } else if (!$catObject->uid) {
-            $catObject->uid = Db::uidById(DbTables::CATS, $catObject->id);
+            $catObject->uid = Db::uidById(Table::CATS, $catObject->id);
         }
 
         // order
@@ -75,7 +75,7 @@ class CatsService extends Component{
         }
 
         // Save it to the project config
-        $path = DbTables::CATS_PROJECT_CONFIG . ".{$catObject->uid}";
+        $path = Table::CATS_PROJECT_CONFIG . ".{$catObject->uid}";
         Craft::$app->projectConfig->set($path, [
             'name' => $catObject->name,
             'order' => $catObject->order,
@@ -86,7 +86,7 @@ class CatsService extends Component{
 
         // set id for "save and stay"
         if ($isNew){
-            $catObject->id = Db::idByUid(DbTables::CATS, $catObject->uid);
+            $catObject->id = Db::idByUid(Table::CATS, $catObject->uid);
         }
 
         return true;
@@ -100,7 +100,7 @@ class CatsService extends Component{
             return false;
         }
 
-        $path = DbTables::CATS_PROJECT_CONFIG . ".{$catObject->uid}";
+        $path = Table::CATS_PROJECT_CONFIG . ".{$catObject->uid}";
         Craft::$app->projectConfig->remove($path);
         return true;
 	}
@@ -169,7 +169,7 @@ class CatsService extends Component{
         if (!$catObject) {
             return;
         }
-        Craft::$app->getDb()->createCommand()->delete(DbTables::CATS, ['id' => $catObject->id])->execute();
+        Craft::$app->getDb()->createCommand()->delete(Table::CATS, ['id' => $catObject->id])->execute();
     }
 
 

@@ -4,7 +4,7 @@ namespace craftsnippets\craftcatsmanager\migrations;
 
 use Craft;
 use craft\db\Migration;
-use craftsnippets\craftcatsmanager\helpers\DbTables;
+use craftsnippets\craftcatsmanager\db\Table;
 
 class Install extends Migration
 {
@@ -29,30 +29,23 @@ class Install extends Migration
 
     protected function createTables()
     {
-        $tablesCreated = false;
-
-        $tableSchema = Craft::$app->db->schema->getTableSchema(DbTables::CATS);
-        if ($tableSchema === null) {
-            $tablesCreated = true;
-            $this->createTable(
-                DbTables::CATS,
-                [
-                    'id' => $this->primaryKey(),
-                    'uid' => $this->uid(),
-                    'order' => $this->integer()->notNull(),
-                    'dateCreated' => $this->dateTime()->notNull(),
-                    'dateUpdated' => $this->dateTime()->notNull(),
-                    'name' => $this->string()->notNull(),
-                    'jsonSettings' => $this->text(),
-                ]
-            );
-        }    
-
-        return $tablesCreated;
+        $this->archiveTableIfExists(Table::CATS);
+        $this->createTable(
+            Table::CATS,
+            [
+                'id' => $this->primaryKey(),
+                'uid' => $this->uid(),
+                'order' => $this->integer()->notNull(),
+                'dateCreated' => $this->dateTime()->notNull(),
+                'dateUpdated' => $this->dateTime()->notNull(),
+                'name' => $this->string()->notNull(),
+                'jsonSettings' => $this->text(),
+            ]
+        );
     }
 
     protected function removeTables()
     {
-        $this->dropTableIfExists(DbTables::CATS);
+        $this->dropTableIfExists(Table::CATS);
     }
 }
