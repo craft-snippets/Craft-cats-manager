@@ -7,8 +7,7 @@ use craft\base\Plugin;
 use yii\base\Event;
 use craft\web\UrlManager;
 use craft\events\RegisterUrlRulesEvent;
-use craft\events\ConfigEvent;
-use craft\services\ProjectConfig;
+
 
 use craftsnippets\craftcatsmanager\db\Table;
 

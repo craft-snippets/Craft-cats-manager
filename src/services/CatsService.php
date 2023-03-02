@@ -21,7 +21,6 @@ class CatsService extends Component{
 
 	public function getAllCats()
 	{
-
         if ($this->_allCats !== null) {
             return $this->_allCats;
         }
@@ -40,7 +39,6 @@ class CatsService extends Component{
         $this->_allCats = $cats;
 
         return $this->_allCats;
-
 	}
 
 	public function getCatById($catId)
@@ -120,7 +118,7 @@ class CatsService extends Component{
             return null;
         }
 
-        $cat = new CatModel($record->toArray([
+        $catObject = new CatModel($record->toArray([
             'id',
             'uid',
             'name',
@@ -129,19 +127,19 @@ class CatsService extends Component{
         ]));
 
         $event = new DefineCatEvent([
-            'cat' => $cat,
+            'cat' => $catObject,
         ]);
         $this->trigger(self::EVENT_DEFINE_CAT, $event);
-        $cat = $event->cat;
+        $catObject = $event->cat;
 
-        return $cat;
+        return $catObject;
 	}
 
     public function handleChangedCat(ConfigEvent $event)
     {
-            // Get the UID that was matched in the config path
-            $uid = $event->tokenMatches[0];
-            $data = $event->newValue;
+        // Get the UID that was matched in the config path
+        $uid = $event->tokenMatches[0];
+        $data = $event->newValue;
 
         $transaction = Craft::$app->getDb()->beginTransaction();
         try {
