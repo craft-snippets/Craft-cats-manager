@@ -1,0 +1,49 @@
+{% import '_includes/forms' as forms %}
+
+{% if not isNew %}
+	{{hiddenInput('catId', catObject.id)}}
+{% endif %}
+
+{# name #}
+{{ forms.textField({
+    label: 'Cat name'|t('craft-cats-manager'),
+    id: 'name',
+    name: 'name',
+    value: catObject.name,
+    required: true,
+    autofocus: true,
+    type: 'text',
+    errors: catObject.getErrors('name'),
+}) }}
+
+{# cat food #}
+{% set foodColumns = {
+    foodName: {
+        'heading': 'Food name',
+        'type': 'text',
+    },
+    foodType: {
+        'heading': 'Food type',
+        'type': 'select',
+        'class': 'thin',
+        'options': {
+            'dry': 'Dry food',
+            'canned': 'Canned food',
+        },
+    }
+} %}
+
+{{forms.editableTableField({
+    id: 'catFood',
+    name: 'catFood',
+    cols: foodColumns,
+    rows: catObject.catFood,
+    addRowLabel: 'Add food'|t('craft-cats-manager'),
+    initJs: true,
+    label: 'Food liked by your cat'|t('craft-cats-manager'),
+    instructions: "Enter cat's favourite food"|t('craft-cats-manager'),
+    errors: catObject.getErrors('catFood'),  
+    allowAdd: true,
+    allowDelete: true,
+    allowReorder: true,        
+}) }}
