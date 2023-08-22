@@ -52,7 +52,7 @@ class CatsService extends Component{
 
         if ($isNew) {
             $catObject->uid = StringHelper::UUID();
-        } else if (!$catObject->uid) {
+        }elseif(!$catObject->uid){
             $catObject->uid = Db::uidById(Table::CATS, $catObject->id);
         }
 
@@ -167,10 +167,8 @@ class CatsService extends Component{
         // Get the UID that was matched in the config path
         $uid = $event->tokenMatches[0];
 
-        // Get the product type
         $catObject = ArrayHelper::firstWhere($this->getAllCats(), 'uid', $uid);
 
-        // If that came back empty, we’re done!
         if (!$catObject) {
             return;
         }
